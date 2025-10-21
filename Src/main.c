@@ -42,12 +42,12 @@ void passThrough(void){
 	HAL_SAI_Receive (&hsai_BlockB2,(uint8_t *)&echInputLeft,1,SAI_WAIT);	// Left
 	HAL_SAI_Receive (&hsai_BlockB2,(uint8_t *)&echInputRight,1,SAI_WAIT);	// Right
 
-    /* Calcul de l'écho pour le canal gauche */
-    int16_t echoLeft = bufferInputLeft[pos];  // Prendre l'échantillon à retard du canal gauche
+    /* Calcul du reberb du canal gauche */
+    int16_t echoLeft = bufferOutputLeft[pos];  // Prendre l'échantillon à retard du canal gauche
     echOutputLeft = echInputLeft + (int16_t)(ALPHA * echoLeft);  // Ajout de l'écho sur le signal gauche
 
     /* Calcul de l'écho pour le canal droit */
-    int16_t echoRight = bufferInputRight[pos];  // Prendre l'échantillon à retard du canal droit
+    int16_t echoRight = bufferOutputRight[pos];  // Prendre l'échantillon à retard du canal droit
     echOutputRight = echInputRight + (int16_t)(ALPHA * echoRight); // Ajout de l'écho sur le signal droit
 
     /* Envoi des échantillons de sortie pour chaque canal */
@@ -61,8 +61,8 @@ void passThrough(void){
 	HAL_SAI_Transmit(&hsai_BlockA2,(uint8_t *)&echOutputRight,1,SAI_WAIT);	// Right
 
     /* Mise à jour des buffers circulaires pour chaque canal */
-	bufferInputLeft[pos] = echInputLeft;   // Stocke l'échantillon d'entrée dans le buffer gauche
-	bufferInputRight[pos] = echInputRight; // Stocke l'échantillon d'entrée dans le buffer droit
+	bufferOutputLeft[pos] = echOutputLeft;   // Stocke l'échantillon d'entrée dans le buffer gauche
+	bufferOutputRight[pos] = echOutputRight; // Stocke l'échantillon d'entrée dans le buffer droit
 
     /* Mise à jour de la position dans les buffers circulaires */
     pos = (pos + 1) % BUFFER_SIZE_INPUT;

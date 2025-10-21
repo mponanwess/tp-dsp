@@ -22894,8 +22894,8 @@ void passThrough(void){
  8008f38:	4844      	ldr	r0, [pc, #272]	@ (800904c <passThrough+0x12c>)
  8008f3a:	f7fe f995 	bl	8007268 <HAL_SAI_Receive>
 
-    /* Calcul de l'écho pour le canal gauche */
-    int16_t echoLeft = bufferInputLeft[pos];  // Prendre l'échantillon à retard du canal gauche
+    /* Calcul du reberb du canal gauche */
+    int16_t echoLeft = bufferOutputLeft[pos];  // Prendre l'échantillon à retard du canal gauche
  8008f3e:	4b45      	ldr	r3, [pc, #276]	@ (8009054 <passThrough+0x134>)
  8008f40:	f9b3 3000 	ldrsh.w	r3, [r3]
  8008f44:	461a      	mov	r2, r3
@@ -22927,7 +22927,7 @@ void passThrough(void){
  8008f84:	801a      	strh	r2, [r3, #0]
 
     /* Calcul de l'écho pour le canal droit */
-    int16_t echoRight = bufferInputRight[pos];  // Prendre l'échantillon à retard du canal droit
+    int16_t echoRight = bufferOutputRight[pos];  // Prendre l'échantillon à retard du canal droit
  8008f86:	4b33      	ldr	r3, [pc, #204]	@ (8009054 <passThrough+0x134>)
  8008f88:	f9b3 3000 	ldrsh.w	r3, [r3]
  8008f8c:	461a      	mov	r2, r3
@@ -22976,19 +22976,19 @@ void passThrough(void){
  8008fe2:	f7fe f873 	bl	80070cc <HAL_SAI_Transmit>
 
     /* Mise à jour des buffers circulaires pour chaque canal */
-	bufferInputLeft[pos] = echInputLeft;   // Stocke l'échantillon d'entrée dans le buffer gauche
+	bufferOutputLeft[pos] = echOutputLeft;   // Stocke l'échantillon d'entrée dans le buffer gauche
  8008fe6:	4b1b      	ldr	r3, [pc, #108]	@ (8009054 <passThrough+0x134>)
  8008fe8:	f9b3 3000 	ldrsh.w	r3, [r3]
  8008fec:	461a      	mov	r2, r3
- 8008fee:	4b16      	ldr	r3, [pc, #88]	@ (8009048 <passThrough+0x128>)
+ 8008fee:	4b1b      	ldr	r3, [pc, #108]	@ (800905c <passThrough+0x13c>)
  8008ff0:	f9b3 1000 	ldrsh.w	r1, [r3]
  8008ff4:	4b18      	ldr	r3, [pc, #96]	@ (8009058 <passThrough+0x138>)
  8008ff6:	f823 1012 	strh.w	r1, [r3, r2, lsl #1]
-	bufferInputRight[pos] = echInputRight; // Stocke l'échantillon d'entrée dans le buffer droit
+	bufferOutputRight[pos] = echOutputRight; // Stocke l'échantillon d'entrée dans le buffer droit
  8008ffa:	4b16      	ldr	r3, [pc, #88]	@ (8009054 <passThrough+0x134>)
  8008ffc:	f9b3 3000 	ldrsh.w	r3, [r3]
  8009000:	461a      	mov	r2, r3
- 8009002:	4b13      	ldr	r3, [pc, #76]	@ (8009050 <passThrough+0x130>)
+ 8009002:	4b18      	ldr	r3, [pc, #96]	@ (8009064 <passThrough+0x144>)
  8009004:	f9b3 1000 	ldrsh.w	r1, [r3]
  8009008:	4b15      	ldr	r3, [pc, #84]	@ (8009060 <passThrough+0x140>)
  800900a:	f823 1012 	strh.w	r1, [r3, r2, lsl #1]

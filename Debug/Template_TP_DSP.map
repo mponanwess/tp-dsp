@@ -6772,9 +6772,9 @@ Discarded input sections
                 0x00000000     0x7d00 ./Src/main.o
  .bss.audioTable
                 0x00000000     0x7d00 ./Src/main.o
- .bss.bufferOutputRight
+ .bss.bufferInputRight
                 0x00000000     0x1f40 ./Src/main.o
- .bss.bufferOutputLeft
+ .bss.bufferInputLeft
                 0x00000000     0x1f40 ./Src/main.o
  .debug_macro   0x00000000      0xafc ./Src/main.o
  .debug_macro   0x00000000      0x19d ./Src/main.o
@@ -8985,12 +8985,12 @@ LOAD C:/ST/STM32CubeIDE_1.16.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.ext
                 0x200002b8       0x60 ./Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_sdram.o
  .bss.uwTick    0x20000318        0x4 ./Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal.o
                 0x20000318                uwTick
- .bss.bufferInputRight
+ .bss.bufferOutputRight
                 0x2000031c     0x1f40 ./Src/main.o
-                0x2000031c                bufferInputRight
- .bss.bufferInputLeft
+                0x2000031c                bufferOutputRight
+ .bss.bufferOutputLeft
                 0x2000225c     0x1f40 ./Src/main.o
-                0x2000225c                bufferInputLeft
+                0x2000225c                bufferOutputLeft
  .bss.echInputLeft
                 0x2000419c        0x2 ./Src/main.o
                 0x2000419c                echInputLeft
