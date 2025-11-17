@@ -74,8 +74,8 @@ all: main-build
 main-build: Template_TP_DSP.elf secondary-outputs
 
 # Tool invocations
-Template_TP_DSP.elf Template_TP_DSP.map: $(OBJS) $(USER_OBJS) D:\Users\user\Documents\Template_TP_DSP\Template_TP_DSP\STM32F746NGHX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Template_TP_DSP.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"D:\Users\user\Documents\Template_TP_DSP\Template_TP_DSP\STM32F746NGHX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Template_TP_DSP.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Template_TP_DSP.elf Template_TP_DSP.map: $(OBJS) $(USER_OBJS) D:\Users\user\Documents\Embedded\tp-dsp\STM32F746NGHX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "Template_TP_DSP.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"D:\Users\user\Documents\Embedded\tp-dsp\STM32F746NGHX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Template_TP_DSP.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

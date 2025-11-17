@@ -35,7 +35,13 @@ int16_t echOutputLeft  = 0;
 // Définir la position du buffer circulaire
 int16_t pos = 0;
 
+
+
 void passThrough(void);
+uint32_t calculNbEchPeriod(uint32_t);
+uint32_t calculNbEchNote(float);
+void notePlayClassic(uint32_t, float);
+void musicPlay(Note *);
 
 void passThrough(void){
 	/* Reception des échantillons d'entrée */
@@ -69,6 +75,36 @@ void passThrough(void){
 }
 
 
+uint32_t calculNbEchPeriod(uint32_t frequence) {
+	return (1 / frequence) * AUDIOFREQ_16K;
+}
+
+uint32_t calculNbEchNote(float duree) {
+	return duree * AUDIOFREQ_16K;
+}
+
+void notePlayClassic(uint32_t frequence, float duree) {
+	uint32_t NbEchNote;
+
+	NbEchNote = calculNbEchNote(duree);
+
+
+	for(uint32_t n = 0; n < NbEchNote; n++)
+	{
+
+		int16_t sample = (int16_t)(AMPLITUDE * sin(2.0f * PI * frequence * n / AUDIOFREQ_16K)); // sinus mis à l'échelle audio
+
+		HAL_SAI_Transmit(&hsai_BlockA2, (uint8_t*)&sample, 1, SAI_WAIT); // gauche
+		HAL_SAI_Transmit(&hsai_BlockA2, (uint8_t*)&sample, 1, SAI_WAIT); // droite
+	}
+}
+
+void musicPlay(Note *t) {
+    for(uint32_t i = 0; i < TAILLE_MUSIQUE; i++) {
+        notePlayClassic(t[i].freqNote, t[i].dureeNote);
+    }
+}
+
 int main(void)
 {
 	SCB_EnableICache();
@@ -76,8 +112,33 @@ int main(void)
 	HAL_Init();
 	BOARD_Init();
 
+	//Note n;
+
+	//uint32_t NbEchPeriod;
+
+	Note musique[TAILLE_MUSIQUE]=
+	{{494,0.3},{659,0.45},{784,0.3},{740,0.3},{659,0.6},{988,0.3},{880,0.9},{740,0.9},{659,0.45},{784,0.3},
+			{740,0.3},{622,0.6},{698,0.3},{494,0.9},{494,0.9},{494,0.3},{659,0.45},{784,0.3},{740,0.3},{659,0.6},
+			{988,0.3},{1174,0.6},{1108,0.3},{1046,0.6},{830,0.3},{1046,0.45},{988,0.3},{932,0.3},{932,0.6},{784,0.3},
+			{659,0.9},{659,0.6},{784,0.3}};
+
+
+	//NbEchPeriod = calculNbEchPeriod(n.freqNote);
+	//NbEchNote = calculNbEchNote(n.dureeNote);
+
+
+
+	musicPlay;
+
+
+
+
 	while(1){
-		passThrough();
+
+	    //passThrough();
+		musicPlay(musique);
+
+
 	}
 
 }

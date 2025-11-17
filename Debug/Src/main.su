@@ -1,4 +1,8 @@
-D:/Users/user/Documents/Template_TP_DSP/Template_TP_DSP/Drivers/CMSIS/Include/core_cm7.h:2073:22:SCB_EnableICache	4	static,ignoring_inline_asm
-D:/Users/user/Documents/Template_TP_DSP/Template_TP_DSP/Drivers/CMSIS/Include/core_cm7.h:2123:22:SCB_EnableDCache	24	static,ignoring_inline_asm
-../Src/main.c:40:6:passThrough	16	static
-../Src/main.c:72:5:main	8	static
+D:/Users/user/Documents/Embedded/tp-dsp/Drivers/CMSIS/Include/core_cm7.h:2073:22:SCB_EnableICache	4	static,ignoring_inline_asm
+D:/Users/user/Documents/Embedded/tp-dsp/Drivers/CMSIS/Include/core_cm7.h:2123:22:SCB_EnableDCache	24	static,ignoring_inline_asm
+../Src/main.c:46:6:passThrough	16	static
+../Src/main.c:78:10:calculNbEchPeriod	16	static
+../Src/main.c:82:10:calculNbEchNote	16	static
+../Src/main.c:86:6:notePlayClassic	40	static
+../Src/main.c:102:6:musicPlay	24	static
+../Src/main.c:108:5:main	272	static
