@@ -37,11 +37,16 @@ int16_t pos = 0;
 
 
 
+
+
+
 void passThrough(void);
 uint32_t calculNbEchPeriod(uint32_t);
 uint32_t calculNbEchNote(float);
 void notePlayClassic(uint32_t, float);
 void musicPlay(Note *);
+void initSinusTable(void);
+void musicPlayDDS(Note *);
 
 void passThrough(void){
 	/* Reception des échantillons d'entrée */
@@ -84,9 +89,8 @@ uint32_t calculNbEchNote(float duree) {
 }
 
 void notePlayClassic(uint32_t frequence, float duree) {
-	uint32_t NbEchNote;
 
-	NbEchNote = calculNbEchNote(duree);
+	uint32_t NbEchNote = calculNbEchNote(duree);
 
 
 	for(uint32_t n = 0; n < NbEchNote; n++)
@@ -104,6 +108,32 @@ void musicPlay(Note *t) {
         notePlayClassic(t[i].freqNote, t[i].dureeNote);
     }
 }
+
+void initSinusTable(void) {
+	for(uint32_t i = 0; i < BUFFER_SIZE_SINUS; i++){
+		sinusTable[i] = (int16_t)(AMPLITUDE * sinf(2.0f * M_PI * i / BUFFER_SIZE_SINUS));
+	}
+}
+
+void notePlayDDS(uint32_t frequence, float duree) {
+    uint32_t NbEchNote = (uint32_t)(duree * AUDIOFREQ_16K);   // nombre d'échantillons
+    double phase = 0;
+    double phaseIncrement = (double)BUFFER_SIZE_SINUS * frequence / AUDIOFREQ_16K;
+
+    for(uint32_t n = 0; n < NbEchNote; n++) {
+        int16_t sample = sinusTable[(int)phase % BUFFER_SIZE_SINUS];
+        HAL_SAI_Transmit(&hsai_BlockA2, (uint8_t*)&sample, 1, SAI_WAIT); // gauche
+        HAL_SAI_Transmit(&hsai_BlockA2, (uint8_t*)&sample, 1, SAI_WAIT); // droite
+        phase += phaseIncrement;
+    }
+}
+
+void musicPlayDDS(Note *t) {
+	for(uint32_t i = 0; i < TAILLE_MUSIQUE; i++) {
+		notePlayDDS(t[i].freqNote, t[i].dureeNote);
+	}
+}
+
 
 int main(void)
 {
@@ -123,12 +153,12 @@ int main(void)
 			{659,0.9},{659,0.6},{784,0.3}};
 
 
+
+
 	//NbEchPeriod = calculNbEchPeriod(n.freqNote);
 	//NbEchNote = calculNbEchNote(n.dureeNote);
 
-
-
-	musicPlay;
+	initSinusTable();
 
 
 
@@ -136,8 +166,8 @@ int main(void)
 	while(1){
 
 	    //passThrough();
-		musicPlay(musique);
-
+		//musicPlay(musique);
+		musicPlayDDS(musique);
 
 	}
 
