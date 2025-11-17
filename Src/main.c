@@ -46,7 +46,11 @@ uint32_t calculNbEchNote(float);
 void notePlayClassic(uint32_t, float);
 void musicPlay(Note *);
 void initSinusTable(void);
+void notePlayDDS(uint32_t, float);
 void musicPlayDDS(Note *);
+void notePlayIIR(uint32_t, float);
+void musicPlayIIR(Note *);
+
 
 void passThrough(void){
 	/* Reception des échantillons d'entrée */
@@ -134,6 +138,34 @@ void musicPlayDDS(Note *t) {
 	}
 }
 
+void notePlayIIR(uint32_t frequence, float duree) {
+    float r = 0.999f; // facteur d’amortissement
+    float omega0 = 2.0f * M_PI * frequence / 16000.0f;
+    float a1 = -2.0f * r * cosf(omega0);
+    float a2 = r * r;
+
+    float y1 = AMPLITUDE; // impulsion initiale
+    float y2 = 0.0f;
+
+    uint32_t NbEchNote = (uint32_t)(duree * 16000);
+
+    for(uint32_t n = 0; n < NbEchNote; n++) {
+        float yn = -a1 * y1 - a2 * y2;  // x[n]=0
+        y2 = y1;
+        y1 = yn;
+
+        int16_t sample = (int16_t)yn;
+        HAL_SAI_Transmit(&hsai_BlockA2, (uint8_t*)&sample, 1, 100); // gauche
+        HAL_SAI_Transmit(&hsai_BlockA2, (uint8_t*)&sample, 1, 100); // droite
+    }
+}
+
+void musicPlayIIR(Note *t) {
+	for(uint32_t i = 0; i < TAILLE_MUSIQUE; i++) {
+		notePlayIIR(t[i].freqNote, t[i].dureeNote);
+	}
+}
+
 
 int main(void)
 {
@@ -167,7 +199,8 @@ int main(void)
 
 	    //passThrough();
 		//musicPlay(musique);
-		musicPlayDDS(musique);
+		//musicPlayDDS(musique);
+		musicPlayIIR(musique);
 
 	}
 
