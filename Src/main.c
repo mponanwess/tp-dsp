@@ -265,6 +265,33 @@ void audioTablePlay(void) {
     }
 }
 
+void lowPassFilterCircFIR_600(void) {
+	int16_t ech[NBR_TAP_LPFILTER_600] = {0};
+	int32_t head = 0;
+	int32_t output;
+
+
+
+
+	 for(uint32_t n = 0; n < BUFFER_SIZE_SINUS; n++) {
+		 ech[head] = audioTable[n];
+		 output = 0;
+
+		 for (uint32_t i = 0; i < NBR_TAP_LPFILTER_600; i++)
+		 {
+			 int idx = (head - i + NBR_TAP_LPFILTER_600) % NBR_TAP_LPFILTER_600;
+			 output += ech[idx] * coeffLowPassFilterFIR_600[i];
+		 }
+
+		 head++;
+		 if (head >= NBR_TAP_LPFILTER_600)
+			 head = 0;
+
+		 HAL_SAI_Transmit(&hsai_BlockA2, (uint8_t*)&output, 1, 100); // gauche
+		 HAL_SAI_Transmit(&hsai_BlockA2, (uint8_t*)&output, 1, 100); // droite
+	 }
+}
+
 
 int main(void)
 {
@@ -290,6 +317,7 @@ int main(void)
 	//NbEchNote = calculNbEchNote(n.dureeNote);
 
 	initSinusTable();
+	audioCreate();
 
 
 
@@ -300,7 +328,8 @@ int main(void)
 		//musicPlay(musique);
 		//musicPlayDDS(musique);
 		//musicPlayIIR(musique);
-		audioTablePlay();
+		//audioTablePlay();
+		lowPassFilterCircFIR_600();
 
 	}
 
