@@ -54,6 +54,8 @@ void musicPlayIIR(Note *);
 void notePlayIIR2(uint32_t, float);
 void notePlayDDS2(uint32_t, float);
 void notePlayClassic2(uint32_t, float);
+void lowPassFilterCircFIR_600(void);
+void highPassFilterCircFIR_550(void);
 
 
 void passThrough(void){
@@ -292,6 +294,43 @@ void lowPassFilterCircFIR_600(void) {
 	 }
 }
 
+void highPassFilterCircFIR_550(void) {
+    int16_t ech[NBR_TAP_HPFILTER_550] = {0};  // Buffer circulaire pour les échantillons
+    int32_t head = 0;  // Pointeur dans le buffer circulaire
+    int32_t output;    // Sortie filtrée
+
+    // Traitement des échantillons
+    for (uint32_t n = 0; n < BUFFER_SIZE_SINUS; n++) {
+        // Charger l'échantillon actuel dans le buffer circulaire
+        ech[head] = audioTable[n];
+        output = 0;  // Initialiser l'accumulateur de la sortie
+
+        // Appliquer la convolution FIR
+        for (uint32_t i = 0; i < NBR_TAP_HPFILTER_550; i++) {
+            // Calcul de l'index circulaire
+            int idx = (head - i + NBR_TAP_HPFILTER_550) % NBR_TAP_HPFILTER_550;
+            output += (int32_t)ech[idx] * (int32_t)coeffHighPassFilterFIR_550[i];  // Accumuler le produit
+        }
+
+        // Mise à jour de l'indice circulaire
+        head++;
+        if (head >= NBR_TAP_HPFILTER_550)
+            head = 0;  // Revenir à 0 si on dépasse la taille du buffer
+
+        // Appliquer une normalisation (décalage de 15 bits)
+        int16_t out16 = (int16_t)(output >> 15);  // Décalage pour adapter la sortie en Q15
+
+        // Saturation pour éviter le débordement
+        if (out16 > 32767) out16 = 32767;
+        if (out16 < -32768) out16 = -32768;
+
+        // Envoi des échantillons filtrés vers les canaux gauche et droite
+        HAL_SAI_Transmit(&hsai_BlockA2, (uint8_t*)&out16, 1, 100);  // Gauche
+        HAL_SAI_Transmit(&hsai_BlockA2, (uint8_t*)&out16, 1, 100);  // Droite
+    }
+}
+
+
 
 int main(void)
 {
@@ -329,7 +368,8 @@ int main(void)
 		//musicPlayDDS(musique);
 		//musicPlayIIR(musique);
 		//audioTablePlay();
-		lowPassFilterCircFIR_600();
+		//lowPassFilterCircFIR_600();
+		highPassFilterCircFIR_550();
 
 	}
 
