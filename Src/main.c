@@ -13,6 +13,7 @@
 #define TIME_START			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET)
 #define TIME_STOP			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_RESET)
 #define PI					3.141592
+#define SIZE_BLOCK			52
 
 #define ALPHA 0.6 // Facteur d'écho à 60%
 
@@ -56,6 +57,7 @@ void notePlayDDS2(uint32_t, float);
 void notePlayClassic2(uint32_t, float);
 void lowPassFilterCircFIR_600(void);
 void highPassFilterCircFIR_550(void);
+void lowPassFilterCircBlocFIR_600(void);
 
 
 void passThrough(void){
@@ -330,6 +332,30 @@ void highPassFilterCircFIR_550(void) {
     }
 }
 
+void lowPassFilterCircBlocFIR_600(void) {
+	int16_t ech[2*SIZE_BLOCK] = {0};
+	uint32_t TAP = SIZE_BLOCK;
+
+	int32_t output;
+
+	for(uint32_t n=0; n<NBR_ECH_BLOC; n++) {
+		TAP = (TAP == 0) ? (2*SIZE_BLOCK - 1) : TAP - 1;
+		ech[TAP] = audioTable[n];
+		output = 0;
+
+		for (uint32_t i = 0; i < NBR_ECH_BLOC; i++)
+		 {
+			output += ech[(TAP + i) % (2*SIZE_BLOCK)] * coeffLowPassFilterFIR_600[i];
+		 }
+
+
+
+		 HAL_SAI_Transmit(&hsai_BlockA2, (uint8_t*)&output, 1, 100); // gauche
+		 HAL_SAI_Transmit(&hsai_BlockA2, (uint8_t*)&output, 1, 100); // droite
+
+	}
+}
+
 
 
 int main(void)
@@ -368,9 +394,9 @@ int main(void)
 		//musicPlayDDS(musique);
 		//musicPlayIIR(musique);
 		//audioTablePlay();
-		//lowPassFilterCircFIR_600();
-		highPassFilterCircFIR_550();
-
+		lowPassFilterCircFIR_600();
+		//highPassFilterCircFIR_550();
+		//lowPassFilterCircBlocFIR_600();
 	}
 
 }
